@@ -3,15 +3,21 @@ import { Text, StyleSheet, View, TextInput, Button } from "react-native";
 import { Context } from "../context/FeedListContext";
 
 
+// recebendo a navegação como props para poder navegar para a tela Index após adicionar um novo feed
 const FeedForm = ({navegacao}) => {
 
+    // criando estados para os campos do formulário
     const [title, setTitle] = useState("");
     const [urlFeed, seturlFeed] = useState("");
+
+    // pegando o state e a função addFeed do context para adicionar um novo feed
+
     const { state, addFeed }  = useContext(Context);
 
+    // função para adicionar um novo feed ao estado global do app
     function adicionarFeed() {
-        addFeed(title, urlFeed);
-        navegacao.navigate("Index");
+        addFeed(title, urlFeed); // chamando a função addFeed do context
+        navegacao.navigate("Index"); // navegando para a tela Index após adicionar um novo feed
     }
 
     return (
@@ -31,7 +37,7 @@ const FeedForm = ({navegacao}) => {
 
             <Button
                 title="Add Feed"
-                onPress={() => {adicionarFeed()}}
+                onPress={() => {adicionarFeed()}} // chamando a função adicionarFeed
             />
 
         </View>

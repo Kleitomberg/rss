@@ -11,11 +11,25 @@ const feedReducer = (state, action) => {
             return action.payload; //retorna a lista de itens do feed
 
         case 'add_item':
-            console.log('implementar');
-            return state;
+
+            let id = state.length + 1;
+
+            newState = [...state,
+                {
+                    title: action.payload.titulo,
+                    link: action.payload.urlFeed,
+                    description: action.payload.description,
+                    pubDate: action.payload.pubDate,
+                    id: id
+                }
+            ];
+
+            return newState;
+
         case 'delete_item':
-            console.log('implementar');
-            return state;
+            newState = state.filter((item) => item.id !== action.payload);
+
+            return newState;
         case 'restore_state':
             console.log('implementar');
             return state;
@@ -27,14 +41,15 @@ const feedReducer = (state, action) => {
 };
 
 const addItem = dispatch => {
-    return (titulo, urlFeed, callback) => {
-        console.log('implementar');
+    return (titulo, urlFeed, description, callback) => {
+            let pubDate = new Date(); // pegando a data atual da criação da noticia
+            dispatch({ type: 'add_item', payload: { titulo, urlFeed, description,pubDate } }); // cahamando o reducer para adicionar o item
     };
 };
 
 const deleteItem = dispatch => {
     return (id) => {
-        console.log('implementar');
+        dispatch({ type: 'delete_item', payload: id });
     };
 };
 
@@ -47,6 +62,8 @@ const fetchItems = dispatch => async (feedURL) => {
 
     let feed = await parser.parse(response.data);
 
+    //media:content
+
     // console.log(feed.rss.channel.language);//linguagem do RSS feed
 
     //lista de itens do feed
@@ -55,6 +72,15 @@ const fetchItems = dispatch => async (feedURL) => {
     // criando um objeto para cada item do feed e adicionando na lista
     for (let i = 0; i < feed.rss.channel.item.length; i++) {
         let item = feed.rss.channel.item[i];
+
+
+        let imageUrl = '';
+        // não funciona o atriuto do media:content com esses : no meio do nome da problema no XMLParser
+        if (item['media:content'] != undefined) {
+            imageUrl = item['media:content']['@_url'];
+        }
+
+
         items.push({
             id: i+1,
             title: item.title,
@@ -62,6 +88,8 @@ const fetchItems = dispatch => async (feedURL) => {
             link: item.link,
             pubDate: item.pubDate,
             guid: item.guid,
+            category: item.category,
+            image : imageUrl
         });
     }
 

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Button, Image } from 'react-native';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { View, Text, StyleSheet, Button, Image, Linking, TouchableOpacity,FlatList } from 'react-native';
 import { Context as FeedListContext } from '../context/FeedListContext'
 import { Context as FeedContext } from '../context/FeedContext'
 import { useContext } from 'react';
@@ -26,7 +25,8 @@ const ShowFeedScreen = ({ route, navigation }) => {
 
 
     const abrirLink = (link) => {
-        console.log('implementar, mandar o usuário para o link da notícia (item.link)');
+     //abrir o link no navegador do celular
+        Linking.openURL(link);
     }
 
     return (
@@ -38,9 +38,18 @@ const ShowFeedScreen = ({ route, navigation }) => {
                     //atualmente só exibe o título, faça com que apareça data de publicação, descrição (pode cortar em 100 ou 200 caracteres para não ficar muito grande), e imagem (caso tenha)
                     //ao clicar em uma notícia, devemos chamar a função abrirLink que direciona o usuário para o link da notícia
                     return (
+                        <TouchableOpacity onPress={() => abrirLink(item.link)}>
                         <View style={styles.row}>
+
+                            <View style={styles.col}>
+                            <Text style={styles.dataPublicacao}>{item.pubDate}</Text>
                             <Text style={styles.titulo}>{item.title}</Text>
+
+                            <Text style={styles.descricao}>{item.description}</Text>
+
+                            </View>
                         </View>
+                        </TouchableOpacity>
                     );
                 }}
             />
@@ -58,6 +67,13 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderColor: 'gray'
     },
+    col: {
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        paddingVertical: 20,
+        paddingHorizontal: 10,
+
+    },
     titulo: {
         fontSize: 14,
         fontWeight: 'bold'
@@ -70,11 +86,19 @@ const styles = StyleSheet.create({
         margin: 5
     },
     descricao: {
-        fontSize: 8
+        fontSize: 10,
+        maxHeight: 4 * 18,
+        overflow: 'hidden',
+        textAlign: 'justify',
+        lineHeight: 18 * 1.2,
+
     },
     dataPublicacao: {
         fontSize: 10,
-        fontStyle: 'italic'
+        fontStyle: 'italic',
+        color: 'gray',
+        textAlign: 'right'
+
     },
     icon: {
         fontSize: 24
