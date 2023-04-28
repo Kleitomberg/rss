@@ -8,6 +8,8 @@ import { Feather } from '@expo/vector-icons';
 import { Provider as FeedListProvider } from './src/context/FeedListContext';
 import { Provider as FeedProvider } from './src/context/FeedContext';
 
+import ToastManager, { Toast } from 'toastify-react-native'
+
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -20,14 +22,17 @@ const App = () => {
         options={({navigation}) => ({
           headerRight: () => (
             <TouchableOpacity onPress={() => navigation.navigate("Add")}>
-              <Feather name="plus" size={30} />
+              <Feather name="plus" size={30} style={{'color':'blue'}} />
             </TouchableOpacity>
-          )
+          ),
+          headerTitleStyle: {
+            color: 'blue', // Define a cor desejada para o texto do nome
+          },
         })
         }
       />
       <Stack.Screen name="Show" component={ShowFeedScreen} />
-      <Stack.Screen name="Add" component={AddFeedScreen} />
+      <Stack.Screen name="Add" component={AddFeedScreen}  />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -38,6 +43,14 @@ export default () => {
     <FeedListProvider>
       <FeedProvider>
         <App />
+        <ToastManager
+             position="bottom"
+             animationDuration={300}
+             animationIn="slideInRight"
+             animationOut="slideOutLeft"
+            width={300}
+             animationInitialOffset={500}
+        />
       </FeedProvider>
     </FeedListProvider>
   );

@@ -2,6 +2,8 @@ import createDataContext from './createDataContext';
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { Toast } from 'toastify-react-native';
+
 const saveFeeds = async (feeds) => {
     try {
         await AsyncStorage.setItem('feeds', JSON.stringify(feeds));
@@ -38,15 +40,19 @@ const feedListReducer = (state, action) => {
 
                 }
             ];
-            saveFeeds(newState);
-            return newState;
 
+            saveFeeds(newState);
+
+            return newState;
+r
         case 'delete_feed':
 
         //remover o feed da lista de feeds
             newState = state.filter((item) => item.id !== action.payload);
         // retornando a nova lista de feeds (sem o feed que foi removido)
+
             saveFeeds(newState);
+
             return newState;
 
         case 'restore_state':
@@ -76,9 +82,13 @@ const addFeed = dispatch => {
 };
 
 const deleteFeed = dispatch => {
+
     return (id) => {
         dispatch({ type: 'delete_feed', payload: id });
+        Toast.success('Feed removido com sucesso!');
+
     };
+
 };
 
 const restoreState = dispatch => async () => {
