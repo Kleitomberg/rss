@@ -3,6 +3,9 @@ import createDataContext from './createDataContext';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Toast } from 'toastify-react-native';
+import rssfeed from '../api/rssfeed';
+import { XMLParser } from 'fast-xml-parser';
+
 
 const saveFeeds = async (feeds) => {
     try {
@@ -28,23 +31,24 @@ const feedListReducer = (state, action) => {
     switch (action.type) {
         case 'add_feed':
 
-            // id do novo feed
-            let id = state.length + 1;
+        let id = state.length + 1; // gerando um id para o novo feed
 
-            // criando um novo estado (lista de feeds) com o novo feed adicionado utilizando o spread operator para copiar o estado atual
-            newState = [...state,
-                {
-                    titulo: action.payload.titulo,
-                    urlFeed: action.payload.urlFeed,
-                    id: id
+        /// criando um novo feed com os dados recebidos + o id gerado acima
+        const feednovo = {
+            titulo: action.payload.titulo,
+            urlFeed: action.payload.urlFeed,
+            id: id,
+            descricao: action.payload.descricao,
+            imagem: action.payload.imagem,
+        };
 
-                }
-            ];
+        newState = [...state, feednovo]; // adicionando o novo feed na lista de feeds
 
-            saveFeeds(newState);
 
-            return newState;
-r
+        saveFeeds(newState); // salvando a lista de feeds no AsyncStorage
+
+        return newState; // retornando a nova lista de feeds (com o novo feed adicionado)
+
         case 'delete_feed':
 
         //remover o feed da lista de feeds
@@ -65,6 +69,7 @@ r
             return [];
 
         case 'recuperar_feeds':
+
             return action.payload; // retornando a lista de feeds recuperada do AsyncStorage
         default:
             return state;
@@ -78,8 +83,53 @@ const addFeed = dispatch => {
 
         dispatch({ type: 'add_feed', payload: { titulo, urlFeed} }); //
 
+        if(callback) {
+            callback();
+        }
+
     };
 };
+    // novo metodo para adicionar um feed, recebe o titulo e a url do feed e busca os dados do feed com imagem e descrição
+    const fetchItem = dispatch => async (titulo, feedURL, callback) => {
+
+        const parser = new XMLParser();
+        const fetch = rssfeed(feedURL);
+        const response = await fetch.get();
+        const data = response.data;
+
+        let feed = await parser.parse(response.data);
+
+        if (feed == undefined || feed == null || feed == "") {
+            Toast.error('Não foi possível adicionar o feed, verifique a URL e tente novamente.');
+            return;
+        }
+
+        //cria objeto com os dados do feed
+
+       let imagemURl = feed.rss.channel.image;
+
+       //verifica se o feed tem imagem
+       if (imagemURl == undefined || imagemURl == null || imagemURl == ""){
+           imagemURl ='';
+         } else {
+            imagemURl = feed.rss.channel.image.url;
+        }
+
+        let feedObj = {
+            titulo: titulo,
+            urlFeed: feedURL,
+            imagem: imagemURl,
+            descricao: feed.rss.channel.description,
+        }
+        //chamando o reducer para atualizar o estado
+        dispatch({ type: 'add_feed', payload: feedObj });
+
+        if(callback) {
+            Toast.success('Feed adicionado com sucesso!');
+            callback();
+        }
+
+    };
 
 const deleteFeed = dispatch => {
 
@@ -157,6 +207,6 @@ const rssFeeds = [
 
 export const { Context, Provider } = createDataContext(
     feedListReducer,
-    { addFeed, deleteFeed, restoreState, deleteAll, getAllFeeds },
+    { addFeed, deleteFeed, restoreState, deleteAll, getAllFeeds,fetchItem },
     [ ]
 );

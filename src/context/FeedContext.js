@@ -56,11 +56,19 @@ const deleteItem = dispatch => {
 const fetchItems = dispatch => async (feedURL) => {
 
     const parser = new XMLParser();
-    const fetch = rssfeed(feedURL);
-    const response = await fetch.get();
-    const data = response.data;
 
-    let feed = await parser.parse(response.data);
+    const fetch = rssfeed(feedURL);
+
+    const response = await fetch.get();
+    const data = response.data; // xml do feed
+
+
+    let feed = await parser.parse(data, {
+        ignoreAttributes: false,
+        attributeNamePrefix: "",
+
+    });
+
 
     //media:content
 
@@ -68,23 +76,35 @@ const fetchItems = dispatch => async (feedURL) => {
 
     //lista de itens do feed
     let items = [];
-
+    let imagesList = [];
     // criando um objeto para cada item do feed e adicionando na lista
     for (let i = 0; i < feed.rss.channel.item.length; i++) {
+
         let item = feed.rss.channel.item[i];
 
-
         let imageUrl = '';
-        // não funciona o atriuto do media:content com esses : no meio do nome da problema no XMLParser
-        if (item['media:content'] != undefined) {
-            imageUrl = item['media:content']['@_url'];
+
+        const regex = /<media:content[^>]+url="([^">]+)/g;
+
+        const match = data.match(regex);
+
+        if(match) {
+            imageUrl = match[i]
         }
 
-
+        if (imageUrl !== '' && imageUrl !== undefined) {
+            imageUrl = imageUrl.replace(/.*?(https:\/\/)/, 'https://');
+        }
+        if (item.description == undefined) {
+            descricao = item.description.replace(/<[^>]+>/g, '');
+        }
+        else {
+            descricao = ''
+        }
         items.push({
             id: i+1,
             title: item.title,
-            description: item.description,
+            description: descricao,
             link: item.link,
             pubDate: item.pubDate,
             guid: item.guid,

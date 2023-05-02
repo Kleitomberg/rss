@@ -13,7 +13,9 @@ const FeedForm = ({navegacao}) => {
 
     // pegando o state e a função addFeed do context para adicionar um novo feed
 
-    const { state, addFeed }  = useContext(Context);
+    const { state, addFeed,fetchItem }  = useContext(Context);
+
+    const [loading, setLoading] = useState(false);
 
 
 
@@ -30,19 +32,16 @@ const FeedForm = ({navegacao}) => {
             return;
         }
 
-        addFeed(title, urlFeed);
-        Toast.success('Feed adicionado com sucesso!');
+        fetchItem(title, urlFeed, () => navegacao.navigate('Index'));
+
         // navegando para a tela Index
-        navegacao.navigate("Index"); // n
-
-
-
+        //navegacao.navigate("Index"); // n
 
 
     }
 
     return (
-        <View>
+        <View style={styles.container}>
             <TextInput
                 style={styles.input}
                 value={title}
@@ -69,24 +68,30 @@ const FeedForm = ({navegacao}) => {
 };
 
 const styles = StyleSheet.create({
+
+    container: {
+        flex: 1,
+        padding: 10,
+        backgroundColor: "#cad8e7",
+    },
     input: {
         fontSize: 18,
+        backgroundColor: "white",
         marginTop: 15,
-        borderWidth: 1,
-        borderColor: "blue",
+
         minHeight: 50,
         marginBottom: 15,
         padding: 5,
-        borderRadius: 5,
+        borderRadius: 8,
         margin: 7,
     },
     btnAdd: {
         fontSize: 18,
         marginBottom: 15,
         padding: 5,
-        borderRadius: 5,
+        borderRadius: 8,
         margin: 5,
-        backgroundColor: "blue",
+        backgroundColor: "#006DF0",
         minHeight: 50,
         color: "white",
         justifyContent: "center",

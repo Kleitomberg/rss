@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Button, Image, Linking, TouchableOpacity,FlatList } from 'react-native';
 import { Context as FeedListContext } from '../context/FeedListContext'
 import { Context as FeedContext } from '../context/FeedContext'
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 
 const ShowFeedScreen = ({ route, navigation }) => {
@@ -15,11 +15,14 @@ const ShowFeedScreen = ({ route, navigation }) => {
     const feed = feedListContext.state.find((feed) => feed.id === feedID);
 
     const { state, fetchItems } = useContext(FeedContext);
-
+    const [loading , setLoading] = useState(true);
 
     //carrega os itens do feed
     useEffect(() => {
-        fetchItems(feed.urlFeed);
+        fetchItems(feed.urlFeed).then(() => {
+            setLoading(false);
+        }
+        );
     }, []);
 
 
@@ -31,7 +34,18 @@ const ShowFeedScreen = ({ route, navigation }) => {
 
     return (
         <>
+            <View style={styles.container}>
+                {loading ?
+                <View style={styles.loading}>
+                <Image
+                source={require('../../assets/loading.gif')}
+                style={styles.loadingImage}
+                />
+                <Text style={styles.loadingText}>Carregando...</Text>
+                </View>
+                :
             <FlatList
+                style={styles.list}
                 data={state}
                 keyExtractor={(rssNews) => rssNews.id}
                 renderItem={({ item }) => {
@@ -41,50 +55,83 @@ const ShowFeedScreen = ({ route, navigation }) => {
                         <TouchableOpacity onPress={() => abrirLink(item.link)}>
                         <View style={styles.row}>
 
-                            <View style={styles.col}>
+
                             <Text style={styles.dataPublicacao}>{item.pubDate}</Text>
                             <Text style={styles.titulo}>{item.title}</Text>
 
+                            { item.image != null && item.image != "" ? <Image style={styles.image} source={{ uri: item.image }} /> :  <Image style={styles.image} source={{ uri: 'https://via.placeholder.com/1920x1080/eee?text=16:9' }} /> }
+
+
                             <Text style={styles.descricao}>{item.description}</Text>
 
-                            </View>
+
                         </View>
                         </TouchableOpacity>
                     );
                 }}
             />
+            }
+            </View>
         </>
     );
 };
 
 //altere os estilos como desejar para melhorar o layout
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#cad8e7',
+        padding: 10,
+
+    },
+    list: {
+        flex: 1,
+        padding: 10,
+        marginTop: 10,
+    },
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#cad8e7',
+        padding: 10,
+    },
+    loadingImage: {
+        width: 100,
+        height: 100,
+    },
     row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 20,
-        paddingHorizontal: 10,
-        borderTopWidth: 1,
-        borderColor: 'gray'
+        flexDirection: 'column',
+        padding: 10,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginBottom: 40,
+        backgroundColor: '#f8f8f8'
+
     },
     col: {
         flexDirection: 'column',
-        justifyContent: 'space-between',
-        paddingVertical: 20,
         paddingHorizontal: 10,
 
     },
     titulo: {
         fontSize: 14,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginBottom: 0,
     },
     image: {
-        //pode alterar largura e altura como desejar
-        width: 100,
-        height: 100,
+        flex: 1,
+        width: '100%',
+        height: 200,
         borderRadius: 4,
-        margin: 5
-    },
+        resizeMode: 'contain',
+        marginBottom: 10,
+        marginTop: 10,
+
+      },
+
     descricao: {
         fontSize: 10,
         maxHeight: 4 * 18,
@@ -97,6 +144,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontStyle: 'italic',
         color: 'gray',
+        marginBottom: 10,
         textAlign: 'right'
 
     },
