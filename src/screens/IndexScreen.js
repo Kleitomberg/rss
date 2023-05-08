@@ -87,14 +87,12 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: '#cad8e7',
-
         paddingVertical: 20,
         alignItems: 'center',
         flexDirection: 'column',
 
     },
     row: {
-
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingVertical: 16,
@@ -106,11 +104,8 @@ const styles = StyleSheet.create({
 
     },
     col: {
-        flexDirection: 'Column',
+        flexDirection: 'column',
         alignContent: 'center',
-
-
-
     },
     title: {
         fontSize: 18,
