@@ -46,6 +46,7 @@ const ShowFeedScreen = ({ route, navigation }) => {
                 :
             <FlatList
                 style={styles.list}
+                showsVerticalScrollIndicator={false} // ocultar a barra de rolagem
                 data={state}
                 keyExtractor={(rssNews) => rssNews.id}
                 renderItem={({ item }) => {
@@ -59,7 +60,8 @@ const ShowFeedScreen = ({ route, navigation }) => {
                             <Text style={styles.dataPublicacao}>{item.pubDate}</Text>
                             <Text style={styles.titulo}>{item.title}</Text>
 
-                            { item.image != null && item.image != "" ? <Image style={styles.image} source={{ uri: item.image }} /> :  <Image style={styles.image} source={{ uri: 'https://via.placeholder.com/1920x1080/eee?text=16:9' }} /> }
+                            { //verifica se existe imagem, caso não exista, exibe uma imagem padrão
+                            item.image != null && item.image != "" ? <Image style={styles.image} source={{ uri: item.image }} /> :  <Image style={styles.image} source={{ uri: 'https://via.placeholder.com/1920x1080/eee?text=16:9' }} /> }
 
 
                             <Text style={styles.descricao}>{item.description}</Text>
@@ -76,7 +78,7 @@ const ShowFeedScreen = ({ route, navigation }) => {
     );
 };
 
-//altere os estilos como desejar para melhorar o layout
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
