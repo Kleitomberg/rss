@@ -122,7 +122,7 @@ const addFeed = dispatch => {
             descricao: feed.rss.channel.description,
         }
         //chamando o reducer para atualizar o estado
-        dispatch({ type: 'add_feed', payload: feedObj });
+        dispatch({ type: 'add_feed', payload: feedObj }); // chamando o reducer para adicionar o feed passando o objeto com os dados do feed
 
         if(callback) {
             Toast.success('Feed adicionado com sucesso!');
@@ -134,7 +134,7 @@ const addFeed = dispatch => {
 const deleteFeed = dispatch => {
 
     return (id) => {
-        dispatch({ type: 'delete_feed', payload: id });
+        dispatch({ type: 'delete_feed', payload: id }); // chamando o reducer para deletar o feed passando o id do feed
         Toast.success('Feed removido com sucesso!');
 
     };
@@ -143,25 +143,26 @@ const deleteFeed = dispatch => {
 
 const restoreState = dispatch => async () => {
     return () => {
-        dispatch({ type: 'restore_state' });
+        dispatch({ type: 'restore_state' }); // chamando o reducer para restaurar o estado, quer dizer n entendi bem esse metodo
     }
 }
 
 const deleteAll = dispatch => {
     return () => {
-        dispatch({ type: 'delete_all' });
+        dispatch({ type: 'delete_all' }); // chamando o reducer para deletar todos os feeds
 
     }
 }
 
+// metodo para recuperar os feeds salvos no AsyncStorage
 const getAllFeeds = dispatch => async () => {
     try {
-        const savedFeeds = await AsyncStorage.getItem('feeds');
-        if (!savedFeeds) {
+        const savedFeeds = await AsyncStorage.getItem('feeds'); // recuperando os feeds salvos
+        if (!savedFeeds) { // se não tiver nada salvo, retorna uma lista vazia
             console.log('nada foi salvo ainda...');
         }
         else {
-            dispatch({type:'recuperar_feeds', payload:JSON.parse(savedFeeds)});
+            dispatch({type:'recuperar_feeds', payload:JSON.parse(savedFeeds)}); // se tiver algo salvo, retorna a lista de feeds
         }
     }
     catch(e) {
@@ -208,5 +209,5 @@ const rssFeeds = [
 export const { Context, Provider } = createDataContext(
     feedListReducer,
     { addFeed, deleteFeed, restoreState, deleteAll, getAllFeeds,fetchItem },
-    [ ]
+    [ ] //iniciando com a lista de feeds vazia
 );
