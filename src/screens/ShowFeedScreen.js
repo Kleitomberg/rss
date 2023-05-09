@@ -57,7 +57,7 @@ const ShowFeedScreen = ({ route, navigation }) => {
                         <View style={styles.row}>
 
 
-                            <Text style={styles.dataPublicacao}>{item.pubDate}</Text>
+
                             <Text style={styles.titulo}>{item.title}</Text>
 
                             { //verifica se existe imagem, caso não exista, exibe uma imagem padrão
@@ -65,7 +65,7 @@ const ShowFeedScreen = ({ route, navigation }) => {
 
 
                             <Text style={styles.descricao}>{item.description}</Text>
-
+                            <Text style={styles.dataPublicacao}>{item.pubDate}</Text>
 
                         </View>
                         </TouchableOpacity>
